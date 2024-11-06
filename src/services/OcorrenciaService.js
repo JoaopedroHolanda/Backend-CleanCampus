@@ -1,0 +1,5 @@
+class OcorrenciaService{
+    async criaOcorrencia(){
+        
+    }
+}
