@@ -1,14 +1,15 @@
 const { compare, hash } = require('bcryptjs');
-const database = require('../models');
+const db = require('../config/conexao');
 const { sign } = require('jsonwebtoken');
 const jsonSecret = require('../config/jsonSecret');
-
+const uuid = require('uuid')
 class ClienteService {
     async login(dto) {
-        const cliente = await database.Cliente.findOne({
-            attributes: ['id', 'ra', 'senha'],
-            where: { ra: dto.ra }
-        });
+        const [rows] = await db.query(
+            'SELECT id, ra, senha FROM clientes WHERE ra = ?',
+            [dto.ra]
+        )
+        const cliente = rows[0];
 
         if (!cliente) {
             throw new Error('Usuário não cadastrado');
@@ -17,44 +18,47 @@ class ClienteService {
         const senhasIguais = await compare(dto.senha, cliente.senha);
 
         if (!senhasIguais) {
-            throw new Error('R.A ou senha inválido');
+            throw new Error('Usuário ou senha inválido');
         }
 
-        const acessToken = sign(
-            { id: cliente.id, ra: cliente.ra },
-            jsonSecret.secret,
-            { expiresIn: 86400 }
-        );
-
-        return { acessToken };
+        const acessToken = sign({
+            id: cliente.id,
+            ra: cliente.email
+        },jsonSecret.secret, {
+            expiresIn: 86400
+        })
+        
+        return {acessToken}
     }
 
     async cadastrar(dto) {
-        const clienteComEmail = await database.Cliente.findOne({
-            where: { email: dto.email }
-        });
+        const [clienteComEmail] = await db.query(
+            'SELECT * FROM clientes WHERE email = ?',
+            [dto.email]
+        );
 
-        const clienteComRa = await database.Cliente.findOne({
-            where: { ra: dto.ra }
-        });
+        const [clienteComRa] = await db.query(
+            'SELECT * FROM clientes WHERE ra = ?',
+            [dto.ra]
+        );
 
-        if (clienteComEmail || clienteComRa) {
-            throw new Error('usuário já cadastrado com email ou R.A');
+        if (clienteComEmail.length > 0 || clienteComRa.length > 0) {
+            throw new Error('Usuário já cadastrado com email ou R.A');
         }
 
         const senhahash = await hash(dto.senha, 8);
 
         try {
-            const novoCliente = await database.Cliente.create({
-                email: dto.email,
-                ra: dto.ra,
-                senha: senhahash
-            });
+            const [result] = await db.query(
+                'INSERT INTO clientes (id,email, ra, senha) VALUES (?,?, ?, ?)',
+                [uuid.v4(),dto.email, dto.ra, senhahash]
+            );
 
-            return novoCliente;
+            const novoClienteId = result.insertId;
+            return { id: novoClienteId, email: dto.email, ra: dto.ra };
         } catch (error) {
-            console.error(error)
-            throw new Error(error);
+            console.error(error);
+            throw new Error('Erro ao cadastrar o cliente');
         }
     }
 }

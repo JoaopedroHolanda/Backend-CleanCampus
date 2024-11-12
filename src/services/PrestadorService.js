@@ -1,15 +1,16 @@
 const { compare, hash } = require('bcryptjs');
-const database = require('../models');
-const uuid = require('uuid');
+const db = require('../config/conexao');
 const { sign } = require('jsonwebtoken');
 const jsonSecret = require('../config/jsonSecret');
+const uuid = require('uuid');
 
 class PrestadorService {
     async login(dto) {
-        const prestador = await database.Prestador.findOne({
-            attributes: ['id', 'ra', 'senha'],
-            where: { ra: dto.ra }
-        });
+        const [rows] = await db.query(
+            'SELECT id, ra, senha FROM prestadores WHERE ra = ?',
+            [dto.ra]
+        );
+        const prestador = rows[0];
 
         if (!prestador) {
             throw new Error('Usuário não cadastrado');
@@ -31,35 +32,35 @@ class PrestadorService {
     }
 
     async cadastrar(dto) {
-        const prestadorComEmail = await database.Prestador.findOne({
-            where: { email: dto.email }
-        });
+        const [prestadorComEmail] = await db.query(
+            'SELECT * FROM prestadores WHERE email = ?',
+            [dto.email]
+        );
 
-        const prestadorComRa = await database.Prestador.findOne({
-            where: { ra: dto.ra }
-        });
+        const [prestadorComRa] = await db.query(
+            'SELECT * FROM prestadores WHERE ra = ?',
+            [dto.ra]
+        );
 
-        if (prestadorComEmail || prestadorComRa) {
-            throw new Error('usuário já cadastrado com email ou R.A');
+        if (prestadorComEmail.length > 0 || prestadorComRa.length > 0) {
+            throw new Error('Usuário já cadastrado com email ou R.A');
         }
 
         const senhahash = await hash(dto.senha, 8);
 
         try {
-            const novoPrestador = await database.Prestador.create({
-                email: dto.email,
-                ra: dto.ra,
-                senha: senhahash,
-                tipo_servico: dto.tipo_servico
-            });
+            const [result] = await db.query(
+                'INSERT INTO prestadores (id, email, ra, senha, tipo_servico) VALUES (?, ?, ?, ?, ?)',
+                [uuid.v4(), dto.email, dto.ra, senhahash, dto.tipo_servico]
+            );
 
-            return novoPrestador;
+            const novoPrestadorId = result.insertId;
+            return { id: novoPrestadorId, email: dto.email, ra: dto.ra, tipo_servico: dto.tipo_servico };
         } catch (error) {
-            console.error(error)
-            throw new Error(error);
+            console.error(error);
+            throw new Error('Erro ao cadastrar o prestador');
         }
     }
-    
 }
 
 module.exports = PrestadorService;

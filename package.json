@@ -13,10 +13,12 @@
     "bcryptjs": "^2.4.3",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.4",
     "nodemon": "^3.1.7",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
     "sqlite3": "^5.1.7",
-    "uuid": "^11.0.2"
+    "uuid": "^11.0.2",
+    "uuidv4": "^6.2.13"
   }
 }
