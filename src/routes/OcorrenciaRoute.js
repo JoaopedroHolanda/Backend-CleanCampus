@@ -4,6 +4,7 @@ const OcorrenciaController = require('../controllers/OcorrenciaController')
 
 const router = Router()
 
+router.post("/ocorrencias/resolver/:ocorrenciaId", OcorrenciaController.resolverOcorrencia)
 router.post("/ocorrencias", OcorrenciaController.criaOcorrencia)
 router.get("/ocorrencias", OcorrenciaController.pegaTodasAsOcorrenciasCliente)
 router.get("/ocorrencias/limpeza", OcorrenciaController.pegaTodasAsOcorrenciasLimpeza)

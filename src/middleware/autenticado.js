@@ -22,7 +22,7 @@ module.exports = async(req, res, next) =>{
         return next()
 
     }catch(error){
-        res.status(401).send('Usuário não autorizado')
+        res.status(401).send(`Usuário não autorizado: ${error}`)
     }
 
 }

@@ -57,7 +57,7 @@ class OcorrenciaService {
             const [result] = await db.query(
                 `SELECT * FROM ocorrencias o
                 INNER JOIN categorias c on c.id=o.categoria_id
-                WHERE s.titulo = manutencao_equipamentos `
+                WHERE c.titulo = "manutencao_equipamentos" `
             )
 
             return result
@@ -71,7 +71,7 @@ class OcorrenciaService {
             const [result] = await db.query(
                 `SELECT * FROM ocorrencias o
                 INNER JOIN categorias c on c.id=o.categoria_id
-                 WHERE titulo = problemas_eletricos `
+                 WHERE c.titulo = "problemas_eletricos" `
             )
 
             return result
@@ -85,7 +85,7 @@ class OcorrenciaService {
             const [result] = await db.query(
                 `SELECT * FROM ocorrencias o
                 INNER JOIN categorias c on c.id=o.categoria_id
-                 WHERE titulo = climatizacao`
+                 WHERE c.titulo = "climatizacao"`
             )
             return result
         }catch(error){
@@ -93,13 +93,22 @@ class OcorrenciaService {
         }
     }
 
-    async resolverOcorrencia(idOcorrencia, idPrestador){
-        try{
-
-        }catch(error){
-            
+    async resolverOcorrencia(idOcorrencia, idPrestador) {
+        try {
+            await db.query(
+                'UPDATE ocorrencias SET resolvida = 1 WHERE id = ?',
+                [idOcorrencia]
+            )
+            const [result] = await db.query(
+                'INSERT INTO ocorrencias_resolvidas (ocorrencia_id, prestador_id) VALUES (?, ?)',
+                [idOcorrencia, idPrestador]
+            )
+            return result;
+        } catch (error) {
+            throw new Error(error);
         }
     }
+    
 
 
     async excluirOcorrencia(id){

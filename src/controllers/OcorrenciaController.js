@@ -77,8 +77,20 @@ class OcorrenciaController {
         }
     }
 
+    static async resolverOcorrencia(req,res){
+        const {ocorrenciaId} = req.params
+        const prestadorId = req.usuarioId
+
+        try{
+            const result = await ocorrenciaService.resolverOcorrencia(Number(ocorrenciaId), prestadorId)
+            res.status(200).send(result)
+        }catch(error){
+            res.status(400).send({message: error.message})
+        }
+    }
+
     static async excluirOcorrencia(req, res){
-        const {id} = req.paramns
+        const {id} = req.params
 
         try{
             const ocorrenciaExcluida = await ocorrenciaService.excluirOcorrencia(id)
@@ -88,5 +100,6 @@ class OcorrenciaController {
         }
     }
 }
+
 
 module.exports = OcorrenciaController;
