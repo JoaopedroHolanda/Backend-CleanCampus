@@ -23,7 +23,7 @@ class ClienteService {
 
         const acessToken = sign({
             id: cliente.id,
-            ra: cliente.email
+            ra: cliente.ra
         },jsonSecret.secret, {
             expiresIn: 86400
         })
