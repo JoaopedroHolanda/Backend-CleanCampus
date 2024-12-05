@@ -13,10 +13,9 @@ module.exports = async(req, res, next) =>{
     try{
         verify(acessToken, jsonSecret.secret)
 
-        const {id, email, ra} = await decode(acessToken)
+        const {id, ra} = await decode(acessToken)
 
         req.usuarioId = id
-        req.usuarioEmail = email
         req.usuarioRa = ra
         
         return next()

@@ -89,16 +89,17 @@ class OcorrenciaController {
         }
     }
 
-    static async excluirOcorrencia(req, res){
-        const {id} = req.params
-
-        try{
-            const ocorrenciaExcluida = await ocorrenciaService.excluirOcorrencia(id)
-            res.status(200).send(ocorrenciaExcluida)
-        }catch(error){
-            res.status(400).send(error)
+    static async excluirOcorrencia(req, res) {
+        const { id } = req.params;
+        try {
+          const ocorrenciaExcluida = await ocorrenciaService.excluirOcorrencia(Number(id));
+          res.status(200).json({ message: "Ocorrência excluída com sucesso", ocorrenciaExcluida });
+        } catch (error) {
+          console.error("Erro ao excluir ocorrência:", error);
+          res.status(400).json({ message: "Erro ao excluir a ocorrência" });
         }
-    }
+      }
+      
 }
 
 
