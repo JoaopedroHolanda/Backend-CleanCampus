@@ -7,10 +7,11 @@ const router = Router()
 router.post("/ocorrencias/resolver/:ocorrenciaId", OcorrenciaController.resolverOcorrencia)
 router.post("/ocorrencias", OcorrenciaController.criaOcorrencia)
 router.get("/ocorrencias", OcorrenciaController.pegaTodasAsOcorrenciasCliente)
+router.get("/ocorrencias/prestadores", OcorrenciaController.pegaTodasAsOcorrenciasCategoriaPrestador)
 router.get("/ocorrencias/limpeza", OcorrenciaController.pegaTodasAsOcorrenciasLimpeza)
 router.get("/ocorrencias/manutencao-equipamentos", OcorrenciaController.pegaTodasAsOcorrenciasManutencaoEquipamentos)
 router.get("/ocorrencias/problemas-eletricos", OcorrenciaController.pegaTodasAsOcorrenciasProblemasEletricos)
 router.get("/ocorrencias/climatizacao",OcorrenciaController.pegaTodasAsOcorrenciasClimatizacao)
-router.delete("/ocorrencias/:id", OcorrenciaController.excluirOcorrencia);
+router.delete("/ocorrencias/:id", OcorrenciaController.excluirOcorrencia)
 
 module.exports = router

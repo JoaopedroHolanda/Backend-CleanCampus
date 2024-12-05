@@ -38,6 +38,19 @@ class OcorrenciaService {
         }
     }
 
+    async pegaAsOcorrenciasCategoriaPrestador(id){
+        try{
+            const [result] = await db.query(
+                `select  o.* from ocorrencias o
+                where o.resolvida = 0 and o.categoria_id = 
+                (select tipo_servico from prestadores p where id = ?)   `, [id]
+            )
+            return result
+
+        }catch(error){
+            throw new Error(error)
+    }}
+
     async pegaTodasAsOcorrenciasLimpeza(){
         try{
             const [result] = await db.query(

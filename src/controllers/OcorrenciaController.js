@@ -77,6 +77,16 @@ class OcorrenciaController {
         }
     }
 
+    static async pegaTodasAsOcorrenciasCategoriaPrestador(req, res){    
+        const prestadorId = req.usuarioId
+        try{
+            const listaOcorrencias = await ocorrenciaService.pegaAsOcorrenciasCategoriaPrestador(prestadorId)
+            res.status(200).send(listaOcorrencias)
+        }catch(error){
+            res.status(400).send({message: error.message})
+        }
+    }
+
     static async resolverOcorrencia(req,res){
         const {ocorrenciaId} = req.params
         const prestadorId = req.usuarioId
