@@ -31,15 +31,24 @@ class OcorrenciaController {
         }
     }
 
-    static async pegaTodasAsOcorrenciasCliente(req, res){
-        const usuarioId = req.usuarioId;
-        try{
-            const listaOcorrencias = await ocorrenciaService.pegaTodasAsOcorrencias(usuarioId)
+    static async pegaTodasAsOcorrenciasCliente(req, res) {
+        const usuarioId = req.usuarioId
+    
+        try {
+            const [listaOcorrencias] = await db.execute(
+                'SELECT * FROM ocorrencias WHERE cliente_id = ? AND resolvida = 0',
+                [usuarioId]
+            );
+    
             res.status(200).send(listaOcorrencias)
-        }catch(error){
-            res.status(400).send({message: error.message})
+        } catch (error) {
+            console.error('Erro ao buscar ocorrências do cliente:', error);
+            res.status(400).send({ message: 'Erro ao buscar as ocorrências do cliente.' });
         }
     }
+    
+    
+    
 
     static async pegaTodasAsOcorrenciasLimpeza(req, res){
         try{
